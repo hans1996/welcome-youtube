@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web UI Clone</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: #282828;
+            color: #fff;
+            padding: 16px;
+            margin: 0;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .settings-section {
+            border: 1px solid #444;
+            padding: 16px;
+            margin-bottom: 16px;
+            border-radius: 4px;
+        }
+        
+        .settings-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .settings-header h3 {
+            margin: 0;
+        }
+        
+        .settings-content {
+            margin-top: 16px;
+        }
+        
+        .quick-actions {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .action-button {
+            background-color: #4a4a4a;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .action-button:hover {
+            background-color: #5a5a5a;
+        }
+        
+        .action-button.danger {
+            background-color: #f44336;
+        }
+        
+        .action-button.danger:hover {
+            background-color: #d32f2f;
+        }
+        
+        .form-group {
+            margin-bottom: 16px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 4px;
+        }
+        
+        input[type="text"],
+        input[type="number"] {
+            padding: 8px;
+            width: 100%;
+            max-width: 300px;
+            background-color: #333;
+            border: 1px solid #444;
+            color: #fff;
+            border-radius: 4px;
+        }
+        
+        .checkbox-group {
+            margin-bottom: 8px;
+        }
+        
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        /* Table styles */
+        .logs-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        
+        .logs-table th,
+        .logs-table td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #444;
+        }
+        
+        .logs-table th {
+            background-color: #333;
+            font-weight: 500;
+        }
+        
+        .logs-table tr:hover {
+            background-color: #333;
+        }
+        
+        .log-error {
+            color: #f44336;
+        }
+        
+        .log-warn {
+            color: #ffeb3b;
+        }
+        
+        .log-info {
+            color: #2196f3;
+        }
+        
+        .request-error {
+            color: #f44336;
+        }
+        
+        .url-cell {
+            max-width: 300px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        /* Screenshot preview */
+        .screenshot-preview {
+            margin-top: 16px;
+            border: 1px solid #444;
+            border-radius: 4px;
+            overflow: hidden;
+            max-width: 100%;
+            display: none;
+        }
+        
+        .screenshot-preview img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .screenshot-preview.visible {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Browser Tools Dashboard</h1>
+        
+        <div class="settings-section">
+            <h3>Quick Actions</h3>
+            <div class="quick-actions">
+                <button id="capture-screenshot" class="action-button">
+                    Capture Screenshot
+                </button>
+                <button id="wipe-logs" class="action-button danger">
+                    Wipe All Logs
+                </button>
+            </div>
+            <div id="screenshot-preview" class="screenshot-preview">
+                <img id="screenshot-image" src="" alt="Screenshot Preview">
+            </div>
+        </div>
+        
+        <div class="settings-section">
+            <h3>Screenshot Settings</h3>
+            <div class="form-group">
+                <label for="screenshot-path">Provide a directory to save screenshots to</label>
+                <input type="text" id="screenshot-path" placeholder="/path/to/screenshots">
+            </div>
+        </div>
+        
+        <div class="settings-section">
+            <div class="settings-header" id="advanced-settings-header">
+                <h3>Advanced Settings</h3>
+                <svg class="chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+            </div>
+            
+            <div class="settings-content" id="advanced-settings-content">
+                <div class="form-group">
+                    <label for="log-limit">Log Limit (number of logs)</label>
+                    <input type="number" id="log-limit" min="1" value="50">
+                </div>
+                
+                <div class="form-group">
+                    <label for="query-limit">Query Limit (characters)</label>
+                    <input type="number" id="query-limit" min="1" value="30000">
+                </div>
+                
+                <div class="form-group">
+                    <label for="string-size-limit">String Size Limit (characters)</label>
+                    <input type="number" id="string-size-limit" min="1" value="500">
+                </div>
+                
+                <div class="form-group">
+                    <label for="max-log-size">Max Log Size (characters)</label>
+                    <input type="number" id="max-log-size" min="1000" value="20000">
+                </div>
+                
+                <div class="checkbox-group">
+                    <label>
+                        <input type="checkbox" id="show-request-headers">
+                        Include Request Headers
+                    </label>
+                </div>
+                
+                <div class="checkbox-group">
+                    <label>
+                        <input type="checkbox" id="show-response-headers">
+                        Include Response Headers
+                    </label>
+                </div>
+            </div>
+        </div>
+        
+        <div class="settings-section">
+            <h3>Console Logs</h3>
+            <div id="console-logs">
+                <p>No logs available</p>
+            </div>
+        </div>
+        
+        <div class="settings-section">
+            <h3>Network Requests</h3>
+            <div id="network-logs">
+                <p>No network requests available</p>
+            </div>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
